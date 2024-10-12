@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+// BlockMovementLogic handles the movement and position of obstacles on the screen.
 class BlockMovementLogic(
     private val viewport: Viewport
 ) : GameLogic, OnGameOverLogic {
@@ -19,22 +20,17 @@ class BlockMovementLogic(
         resetBlock()
     }
 
+    // Moves blocks according to the game's delta time.
     override fun onUpdate(deltaTime: Float) {
-        updateBlockX { x ->
-            x - (scrollAmount * deltaTime).dp
-        }
+        updateBlockX { x -> x - (scrollAmount * deltaTime).dp }
     }
 
     private fun updateBlockX(update: (Dp) -> Dp) {
         _blockPosition.update { blocks ->
             blocks.map { block ->
                 block.copy(
-                    topPipe = block.topPipe.copy(
-                        x = update(block.topPipe.x)
-                    ),
-                    bottomPipe = block.bottomPipe.copy(
-                        x = update(block.bottomPipe.x)
-                    )
+                    topPipe = block.topPipe.copy(x = update(block.topPipe.x)),
+                    bottomPipe = block.bottomPipe.copy(x = update(block.bottomPipe.x))
                 )
             }
         }
@@ -59,18 +55,13 @@ class BlockMovementLogic(
     }
 
     fun addBlock(createBlock: Block) {
-        _blockPosition.update {
-            it + createBlock
-        }
+        _blockPosition.update { it + createBlock }
     }
 
     fun updateBlock(existingBlock: Block, updatedBlock: Block) {
         _blockPosition.update { blocks ->
             blocks.map { block ->
-                if (block.id == existingBlock.id) {
-                    return@map updatedBlock
-                }
-                block
+                if (block.id == existingBlock.id) updatedBlock else block
             }
         }
     }

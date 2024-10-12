@@ -12,37 +12,43 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class) // Opt-in for experimental coroutine APIs
 class GameStatusLogic(coroutineScope: CoroutineScope) : GameLogic {
-    private val _gameState = MutableStateFlow(GameStatus.NotStarted)
-    val gameState: StateFlow<GameStatus> = _gameState
+    private val _gameState = MutableStateFlow(GameStatus.NotStarted) // Initial game state
+    val gameState: StateFlow<GameStatus> = _gameState // Expose game state as StateFlow
 
     init {
+        // Launch a coroutine to restart the game after a delay when the game is over
         coroutineScope.launch {
             gameState.mapLatest {
                 if (it == GameStatus.GameOver) {
-                    delay(3000)
+                    delay(2000)
                     restartGame()
                 }
             }.collect()
         }
     }
-    override fun onUpdate(deltaTime: Float) {
 
+    override fun onUpdate(deltaTime: Float) {
+        // Logic to update game state (not implemented)
     }
 
+    // Method to start the game
     fun gameStarted() {
         _gameState.update { GameStatus.Started }
     }
 
+    // Restart the game logic
     private fun restartGame() {
         _gameState.update { GameStatus.NotStarted }
     }
 
+    // Check if the game has started
     fun isStarted(): Boolean {
         return _gameState.value == GameStatus.Started
     }
 
+    // Method to set game over state
     fun gameOver() {
         _gameState.update { GameStatus.GameOver }
     }

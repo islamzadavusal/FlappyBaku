@@ -6,11 +6,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class GameScoreLogic(
-    private val playerLogic: PlayerLogic,
-    private val blockMovementLogic: BlockMovementLogic
+    private val playerLogic: PlayerLogic, // Logic to manage player state
+    private val blockMovementLogic: BlockMovementLogic // Logic to manage block movements
 ) : GameLogic, OnGameOverLogic {
-    private val _score = MutableStateFlow(0)
-    val score: StateFlow<Int> = _score
+    private val _score = MutableStateFlow(0) // State flow to track the score
+    val score: StateFlow<Int> = _score // Expose score as a read-only StateFlow
+
     override fun onUpdate(deltaTime: Float) {
         val blocks = blockMovementLogic.blockPosition.value
         blocks.forEach { block ->
@@ -19,6 +20,7 @@ class GameScoreLogic(
             val scoreRect = block.scoreRect
             val playerRect = playerLogic.player.value.rect
 
+            // Check for overlap (scoring)
             val hasScored = playerRect.overlaps(scoreRect)
             if (hasScored) {
                 blockMovementLogic.scoreBlock(block)
@@ -27,6 +29,7 @@ class GameScoreLogic(
         }
     }
 
+    // Reset score on game over
     override fun onGameOver() {
         _score.value = 0
     }

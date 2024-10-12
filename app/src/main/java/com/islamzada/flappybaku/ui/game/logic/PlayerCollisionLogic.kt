@@ -7,17 +7,19 @@ import com.islamzada.flappybaku.ui.game.model.Player
 import com.islamzada.flappybaku.ui.game.model.Viewport
 
 class PlayerCollisionLogic(
-    private val playerLogic: PlayerLogic,
-    private val blockMovementLogic: BlockMovementLogic,
-    private val gameStatusLogic: GameStatusLogic,
+    private val playerLogic: PlayerLogic, // Logic for player state
+    private val blockMovementLogic: BlockMovementLogic, // Logic for block movements
+    private val gameStatusLogic: GameStatusLogic, // Logic to manage game status
     private val viewport: Viewport
 ) : GameLogic {
 
     override fun onUpdate(deltaTime: Float) {
+        // Check for collisions and boundaries
         if (checkPlayerOutOfBounds()) return
         checkBlockCollision()
     }
 
+    // Check if the player is out of the visible area
     private fun checkPlayerOutOfBounds(): Boolean {
         val playerY = playerLogic.player.value.y
         if (playerY > viewport.height || playerY < (-50).dp) {
@@ -27,10 +29,12 @@ class PlayerCollisionLogic(
         return false
     }
 
+    // Check collisions between player and blocks
     private fun checkBlockCollision() {
         val player = playerLogic.player.value
         val blocks = blockMovementLogic.blockPosition.value
         blocks.forEach { block ->
+            // Check for collisions with top and bottom pipes of blocks
             val topPipeCollided = collided(player, block.topPipe)
             val bottomPipeCollided = collided(player, block.bottomPipe)
 
@@ -42,6 +46,7 @@ class PlayerCollisionLogic(
         }
     }
 
+    // Check if player collides with a given pipe
     private fun collided(
         player: Player,
         pipe: Pipe
